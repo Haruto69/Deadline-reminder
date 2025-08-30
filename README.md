@@ -3,7 +3,7 @@
 🚀 Excited to share my **Final Project** from my Web Development Internship at **SkillCraft Technology** – a **Feature-Rich To-Do App** ✅  
 
 🔗 **Live Demo:** [Try it Here](https://lnkd.in/d8pewmeZ)  
-💻 **Source Code:** [View on GitHub](https://lnkd.in/deQiAB7N)  
+
 
 ---
 
@@ -29,7 +29,4 @@
 
 ---
 
-## 📸 Preview
-![To-Do App Screenshot](https://user-images.githubusercontent.com/your-screenshot-link.png)  
 
----
