@@ -1,3 +1,43 @@
+// Import Capacitor Local Notifications plugin
+import { LocalNotifications } from '@capacitor/local-notifications';
+
+// Ask permission at startup
+async function requestPermission() {
+    const result = await LocalNotifications.requestPermissions();
+    if (result.display === 'granted') {
+        console.log("✅ Notifications allowed");
+    } else {
+        console.log("❌ Notifications denied");
+    }
+}
+requestPermission();
+
+// Helper to schedule reminder
+async function scheduleReminder(taskText, dueDate) {
+    if (!dueDate) return; // Only if due date exists
+
+    const date = new Date(dueDate);
+
+    // Skip past dates
+    if (date <= new Date()) return;
+
+    await LocalNotifications.schedule({
+        notifications: [
+            {
+                title: "Upcoming Deadline",
+                body: `Task: ${taskText}`,
+                id: Date.now(),
+                schedule: { at: date }
+            }
+        ]
+    });
+
+    console.log(`🔔 Reminder scheduled for "${taskText}" at ${date}`);
+}
+
+// -------------------
+// Task Manager Class
+// -------------------
 class TaskManager {
     constructor() {
         this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -73,6 +113,11 @@ class TaskManager {
         this.taskInput.value = '';
         this.renderTasks();
         this.updateTaskCount();
+
+        // 🔔 Schedule notification if due date set
+        if (dueDateTime) {
+            scheduleReminder(task.text, task.dueDate);
+        }
     }
     
     getDueDateTime() {
@@ -112,6 +157,11 @@ class TaskManager {
             this.saveTasks();
             this.editingTaskId = null;
             this.renderTasks();
+
+            // 🔔 Reschedule reminder if due date changed
+            if (newDueDate) {
+                scheduleReminder(task.text, newDueDate);
+            }
         }
     }
     
@@ -330,17 +380,3 @@ class TaskManager {
             return `Tomorrow at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         } else {
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-    }
-    
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-}
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
-    new TaskManager();
-});
